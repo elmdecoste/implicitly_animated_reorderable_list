@@ -126,8 +126,8 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
     return ImplicitlyAnimatedReorderableList<Language>(
       items: selectedLanguages,
       shrinkWrap: true,
-      reorderDuration: Duration(milliseconds: 200),
-      liftDuration: Duration(milliseconds: 300),
+      reorderDuration: const Duration(milliseconds: 200),
+      liftDuration: const Duration(milliseconds: 300),
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
@@ -228,42 +228,6 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
         ),
       ),
     ];
-
-    return ListTile(
-      title: Text(
-        lang.nativeName,
-        style: textTheme.bodyText2.copyWith(
-          fontSize: 16,
-        ),
-      ),
-      subtitle: Text(
-        lang.englishName,
-        style: textTheme.bodyText1.copyWith(
-          fontSize: 15,
-        ),
-      ),
-      leading: SizedBox(
-        width: 36,
-        height: 36,
-        child: Center(
-          child: Text(
-            '${selectedLanguages.indexOf(lang) + 1}',
-            style: textTheme.bodyText2.copyWith(
-              color: theme.accentColor,
-              fontSize: 16,
-            ),
-          ),
-        ),
-      ),
-      trailing: const Handle(
-        delay: Duration(milliseconds: 0),
-        capturePointer: true,
-        child: Icon(
-          Icons.drag_handle,
-          color: Colors.grey,
-        ),
-      ),
-    );
 
     return Slidable(
       actionPane: const SlidableBehindActionPane(),

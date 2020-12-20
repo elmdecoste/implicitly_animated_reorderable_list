@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -56,6 +57,7 @@ class Handle extends StatefulWidget {
 }
 
 class _HandleState extends State<Handle> {
+  ScrollableState _parent;
   // A custom handler used to cancel the pending onDragStart callbacks.
   Handler _handler;
   // The parent Reorderable item.
@@ -77,6 +79,10 @@ class _HandleState extends State<Handle> {
   bool get _inDrag => _list.inDrag ?? false;
   bool get _inReorder => _list.inReorder ?? false;
 
+  // The pixel offset of a possible parent Scrollable
+  // used to capture it.
+  double _parentPixels = 0.0;
+
   void _onDragStarted() {
     // If the list is already in drag we dont want to
     // initiate a new reorder.
@@ -87,7 +93,9 @@ class _HandleState extends State<Handle> {
       return;
     }
 
-    _disposeParentDrag();
+    _parentPixels = _parent?.position?.pixels ?? 0.0;
+
+    _captureParentList();
     _startOffset = _currentOffset;
 
     _list?.onDragStarted(_reorderable?.key);
@@ -98,6 +106,7 @@ class _HandleState extends State<Handle> {
 
   void _onDragUpdated(Offset pointer) {
     _list?.onDragUpdated(_delta);
+    _captureParentList();
   }
 
   void _onDragEnded() {
@@ -109,23 +118,25 @@ class _HandleState extends State<Handle> {
     if (widget.vibrate) HapticFeedback.mediumImpact();
   }
 
-  void _disposeParentDrag() {
-    final parent = Scrollable.of(_list.context);
-
+  void _captureParentList() {
     // Listener does not capture the drag of this Handle
     // however we also cannot use GestureDetector to capture
     // the drag on the Handle, as this might make the whole
     // list unscrollable (e.g. when the Handle wraps a whole ListTile).
-    parent?.position?.jumpTo(parent.position.pixels);
+    //
+    // This seems to be the only working solution to this problem.
+    _parent?.position?.jumpTo(_parentPixels);
   }
 
   @override
   Widget build(BuildContext context) {
-    _list ??= ImplicitlyAnimatedReorderableList.of(context);
+    _list = ImplicitlyAnimatedReorderableList.of(context);
     assert(_list != null,
         'No ancestor ImplicitlyAnimatedReorderableList was found in the hierarchy!');
-    _reorderable ??= Reorderable.of(context);
-    assert(_reorderable != null, 'No ancestor Reorderable was found in the hierarchy!');
+    _reorderable = Reorderable.of(context);
+    assert(_reorderable != null,
+        'No ancestor Reorderable was found in the hierarchy!');
+    _parent = Scrollable.of(_list.context);
 
     // Sometimes the cancel callbacks of the GestureDetector
     // are erroneously invoked. Use a plain Listener instead
@@ -136,22 +147,7 @@ class _HandleState extends State<Handle> {
       onPointerMove: (event) => _onUpdate(event.localPosition),
       onPointerUp: (_) => _onUp(),
       onPointerCancel: (_) => _onUp(),
-      child: widget.capturePointer
-          ? GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              // Vertical
-              onVerticalDragDown: _isVertical && _inDrag ? (_) {} : null,
-              onVerticalDragUpdate: _isVertical && _inDrag ? (_) {} : null,
-              onVerticalDragEnd: _isVertical && _inDrag ? (_) {} : null,
-              onVerticalDragCancel: _isVertical && _inDrag ? () {} : null,
-              // Horizontal
-              onHorizontalDragDown: !_isVertical && _inDrag ? (_) {} : null,
-              onHorizontalDragUpdate: !_isVertical && _inDrag ? (_) {} : null,
-              onHorizontalDragEnd: !_isVertical && _inDrag ? (_) {} : null,
-              onHorizontalDragCancel: !_isVertical && _inDrag ? () {} : null,
-              child: widget.child,
-            )
-          : widget.child,
+      child: widget.child,
     );
   }
 
