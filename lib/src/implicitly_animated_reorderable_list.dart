@@ -526,15 +526,17 @@ class ImplicitlyAnimatedReorderableListState<E>
     _Item target = dragItem;
 
     // Boxes are in the order in which they are build, not
-    // necessarily based on their index.
+    // necessarily index based.
     final boxes = _itemBoxes.values.toList()
       ..sort((a, b) => a.index.compareTo(b.index));
 
     for (final box in boxes) {
+      final t = getTranslation(box.key);
+
       if (_up) {
-        if (_dragStart <= box.start) return box;
+        if (_dragStart <= (box.start + t)) return box;
       } else {
-        if (_dragEnd >= box.end) target = box;
+        if (_dragEnd >= (box.end + t)) target = box;
       }
     }
 
