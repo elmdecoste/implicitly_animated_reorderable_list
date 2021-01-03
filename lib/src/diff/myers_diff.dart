@@ -77,17 +77,17 @@ List<Diff> _myersDiff<E>(_DiffArguments<E> args) {
   return diffs.reversed.toList(growable: true);
 }
 
-PathNode _buildPath<E>(
-    List<E> oldList, List<E> newList, ItemDiffUtil<E> equals) {
+PathNode _buildPath<E>(List<E> oldList, List<E> newList, ItemDiffUtil<E> equals) {
   final oldSize = oldList.length;
   final newSize = newList.length;
 
   final int max = oldSize + newSize + 1;
   final int size = (2 * max) + 1;
   final int middle = size ~/ 2;
-  final List<PathNode> diagonal = List(size);
+  final List<PathNode> diagonal = List.filled(size, null);
 
   diagonal[middle + 1] = Snake(0, -1, null);
+
   for (int d = 0; d < max; d++) {
     for (int k = -d; k <= d; k += 2) {
       final int kmiddle = middle + k;
@@ -97,8 +97,7 @@ PathNode _buildPath<E>(
 
       int i;
       if ((k == -d) ||
-          (k != d &&
-              diagonal[kminus].originIndex < diagonal[kplus].originIndex)) {
+          (k != d && diagonal[kminus].originIndex < diagonal[kplus].originIndex)) {
         i = diagonal[kplus].originIndex;
         prev = diagonal[kplus];
       } else {
@@ -132,7 +131,7 @@ PathNode _buildPath<E>(
 }
 
 List<Diff> _buildPatch<E>(PathNode path, List<E> oldList, List<E> newList) {
-  if (path == null) throw ArgumentError('path is null');
+  assert(path != null);
 
   final List<Diff> diffs = [];
 
@@ -141,10 +140,9 @@ List<Diff> _buildPatch<E>(PathNode path, List<E> oldList, List<E> newList) {
     path = path.previousNode;
   }
 
-  while (path != null &&
-      path.previousNode != null &&
-      path.previousNode.revisedIndex >= 0) {
-    if (path.isSnake) throw Exception();
+  while (
+      path != null && path.previousNode != null && path.previousNode.revisedIndex >= 0) {
+    assert(!path.isSnake);
 
     final i = path.originIndex;
     final j = path.revisedIndex;

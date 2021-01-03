@@ -30,7 +30,9 @@ class DiffDelegate<E> {
         var insertIndex = diff.size;
         while (insertIndex < diffLength) {
           _callback.onInserted(
-              insertIndex + diff.index, diff.items[insertIndex]);
+            insertIndex + diff.index,
+            diff.items[insertIndex],
+          );
           insertIndex++;
         }
       }
