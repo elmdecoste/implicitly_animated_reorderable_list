@@ -171,7 +171,15 @@ abstract class ImplicitlyAnimatedListBaseState<
   Future<void> _calcDiffs() async {
     if (!mounted) return;
 
-    if (!listEquals(_oldItems, _newItems)) {
+    // Don't check for too long lists the list equality as 
+    // this would begin to take longer than the diff 
+    // algorithm itself.
+    final areListsShortEnoughForEqualityCheck =
+        _oldItems.length < 100 && _newItems.length < 100;
+    final areListsEqual =
+        areListsShortEnoughForEqualityCheck && listEquals(_oldItems, _newItems);
+
+    if (!areListsEqual) {
       _changes.clear();
 
       await _diffOperation?.cancel();
