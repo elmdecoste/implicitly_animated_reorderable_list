@@ -101,9 +101,9 @@ class ReorderableState extends State<Reorderable>
   }
 
   void rebuild() {
-    /* if (mounted) {
+    if (mounted) {
       setState(() {});
-    } */
+    }
   }
 
   void _registerItem() {

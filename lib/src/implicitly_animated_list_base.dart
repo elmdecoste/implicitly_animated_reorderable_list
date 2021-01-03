@@ -15,8 +15,7 @@ typedef RemovedItemBuilder<W extends Widget, E> = W Function(
 typedef UpdatedItemBuilder<W extends Widget, E> = W Function(
     BuildContext context, Animation<double> animation, E item);
 
-abstract class ImplicitlyAnimatedListBase<W extends Widget, E>
-    extends StatefulWidget {
+abstract class ImplicitlyAnimatedListBase<W extends Widget, E> extends StatefulWidget {
   /// Called, as needed, to build list item widgets.
   ///
   /// List items are only built when they're scrolled into view.
@@ -92,7 +91,7 @@ abstract class ImplicitlyAnimatedListBaseState<
   SliverAnimatedListState get list => animatedListKey.currentState;
 
   DiffDelegate _delegate;
-  CancelableOperation _diffOperation;
+  CancelableOperation<List<Diff>> _diffOperation;
 
   // Animation controller for custom animation that are not supported
   // by the [AnimatedList], like updates.
@@ -180,23 +179,25 @@ abstract class ImplicitlyAnimatedListBaseState<
         MyersDiff.withCallback<E>(this, spawnIsolate: widget.spawnIsolate),
       );
 
-      final diffs = await _diffOperation.value;
-      if (diffs == null || !mounted) return;
+      _diffOperation.then((diffs) {
+        // diffs is null when the operation
+        // gets canceled.
+        if (diffs == null || !mounted) return;
 
-      await _delegate.applyDiffs(diffs);
-      if (!mounted) return;
+        _delegate.applyDiffs(diffs);
 
-      setState(() {
-        _data = List.from(_newItems);
+        setState(
+          () => _data = List<E>.from(_newItems),
+        );
+
+        _updateAnimController
+          ..reset()
+          ..forward();
       });
-
-      _updateAnimController
-        ..reset()
-        ..forward();
     } else {
       // Always update the list with the newest data,
       // even if the lists have the same value equality.
-      _data = List.from(_newItems);
+      _data = List<E>.from(_newItems);
     }
   }
 
@@ -208,40 +209,32 @@ abstract class ImplicitlyAnimatedListBaseState<
   @nonVirtual
   @protected
   @override
-  bool areItemsTheSame(E oldItem, E newItem) =>
-      widget.areItemsTheSame(oldItem, newItem);
+  bool areItemsTheSame(E oldItem, E newItem) => widget.areItemsTheSame(oldItem, newItem);
 
   @mustCallSuper
   @protected
   @override
   void onInserted(int index, E item) {
-    try {
-      list.insertItem(index, duration: widget.insertDuration);
-    } catch (_) {
-      // Usually, this shouldn't happen, but just for safety.
-    }
+    list.insertItem(index, duration: widget.insertDuration);
   }
 
   @mustCallSuper
   @protected
   @override
   void onRemoved(int index) {
-    final item = oldList.getOrNull(index);
-    assert(item != null);
+    final item = oldList[index];
 
-    try {
-      list.removeItem(
-        index,
-        (context, animation) {
-          if (removeItemBuilder != null) {
-            return removeItemBuilder(context, animation, item);
-          }
+    list.removeItem(
+      index,
+      (context, animation) {
+        if (removeItemBuilder != null) {
+          return removeItemBuilder(context, animation, item);
+        }
 
-          return itemBuilder(context, animation, item, index);
-        },
-        duration: widget.removeDuration,
-      );
-    } catch (_) {}
+        return itemBuilder(context, animation, item, index);
+      },
+      duration: widget.removeDuration,
+    );
   }
 
   @mustCallSuper
@@ -258,8 +251,7 @@ abstract class ImplicitlyAnimatedListBaseState<
 
   @nonVirtual
   @protected
-  Widget buildItem(
-      BuildContext context, Animation<double> animation, E item, int index) {
+  Widget buildItem(BuildContext context, Animation<double> animation, E item, int index) {
     if (updateItemBuilder != null && changes[item] != null) {
       return buildUpdatedItemWidget(item);
     }
