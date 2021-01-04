@@ -22,7 +22,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
   static const double _horizontalHeight = 96;
   static const List<String> options = [
     'Shuffle',
-    'Nested example',
+    'Test',
   ];
 
   final List<Language> selectedLanguages = [
@@ -402,11 +402,11 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
           case 'Shuffle':
             setState(selectedLanguages.shuffle);
             break;
-          case 'Nested example':
+          case 'Test':
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const VerticalNestedExample(),
+                builder: (_) => const TestPage(),
               ),
             );
             break;

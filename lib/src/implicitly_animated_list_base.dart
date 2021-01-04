@@ -91,7 +91,7 @@ abstract class ImplicitlyAnimatedListBaseState<
   SliverAnimatedListState get list => animatedListKey.currentState;
 
   DiffDelegate _delegate;
-  CancelableOperation<List<Diff>> _diffOperation;
+  CancelableOperation _diffOperation;
 
   // Animation controller for custom animation that are not supported
   // by the [AnimatedList], like updates.
@@ -171,8 +171,8 @@ abstract class ImplicitlyAnimatedListBaseState<
   Future<void> _calcDiffs() async {
     if (!mounted) return;
 
-    // Don't check for too long lists the list equality as 
-    // this would begin to take longer than the diff 
+    // Don't check for too long lists the list equality as
+    // this would begin to take longer than the diff
     // algorithm itself.
     final areListsShortEnoughForEqualityCheck =
         _oldItems.length < 100 && _newItems.length < 100;
@@ -192,15 +192,14 @@ abstract class ImplicitlyAnimatedListBaseState<
         // gets canceled.
         if (diffs == null || !mounted) return;
 
-        _delegate.applyDiffs(diffs);
+        setState(() {
+          _delegate.applyDiffs(diffs);
+          _data = List<E>.from(_newItems);
 
-        setState(
-          () => _data = List<E>.from(_newItems),
-        );
-
-        _updateAnimController
-          ..reset()
-          ..forward();
+          _updateAnimController
+            ..reset()
+            ..forward();
+        });
       });
     } else {
       // Always update the list with the newest data,

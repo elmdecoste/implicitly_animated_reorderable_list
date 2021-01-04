@@ -6,29 +6,40 @@ import 'package:flutter/material.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
 
-class VerticalNestedExample extends StatefulWidget {
-  const VerticalNestedExample();
+class TestPage extends StatefulWidget {
+  const TestPage();
 
   @override
-  State<StatefulWidget> createState() => VerticalNestedExampleState();
+  State<StatefulWidget> createState() => TestPageState();
 }
 
-class VerticalNestedExampleState extends State<VerticalNestedExample> {
+class TestPageState extends State<TestPage> {
   static const maxLength = 1000;
 
-  List<int> nestedList = List.generate(maxLength, (i) => i);
+  List<Test> nestedList = List.generate(maxLength, (i) => Test(i));
 
   @override
   void initState() {
     super.initState();
 
+    crazyListOperationMadness();
+  }
+
+  void crazyListOperationMadness() {
+    void assignNewList() {
+      nestedList = List.generate(Random().nextInt(maxLength), (i) => Test(i))..shuffle();
+
+      setState(() {});
+    }
+
     Timer.periodic(
-      const Duration(milliseconds: 1500),
+      const Duration(milliseconds: 500),
       (_) async {
-        nestedList = List.generate(Random().nextInt(maxLength), (i) => i)..shuffle();
-        setState(() {});
-        await Future.delayed(const Duration(milliseconds: 500));
-        nestedList = List.generate(Random().nextInt(maxLength), (i) => i)..shuffle();
+        assignNewList();
+        assignNewList();
+        await Future.delayed(const Duration(milliseconds: 100));
+        nestedList = List.generate(Random().nextInt(maxLength), (i) => Test(i))
+          ..shuffle();
         setState(() {});
       },
     );
@@ -41,7 +52,7 @@ class VerticalNestedExampleState extends State<VerticalNestedExample> {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.amber),
-      body: ImplicitlyAnimatedReorderableList<int>(
+      body: ImplicitlyAnimatedReorderableList<Test>(
         padding: const EdgeInsets.all(24),
         items: nestedList,
         areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
@@ -92,11 +103,10 @@ class VerticalNestedExampleState extends State<VerticalNestedExample> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('$item'),
-                          /* const Handle(
+                          Text('${item.key}'),
+                          const Handle(
                             child: Icon(Icons.menu),
-                            capturePointer: true,
-                          ), */
+                          ),
                         ],
                       ),
                     ),
@@ -109,4 +119,19 @@ class VerticalNestedExampleState extends State<VerticalNestedExample> {
       ),
     );
   }
+}
+
+class Test {
+  final int key;
+  Test(this.key);
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is Test && o.key == key;
+  }
+
+  @override
+  int get hashCode => key.hashCode;
 }
