@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
@@ -11,7 +14,25 @@ class VerticalNestedExample extends StatefulWidget {
 }
 
 class VerticalNestedExampleState extends State<VerticalNestedExample> {
-  List<String> nestedList = List.generate(20, (i) => "$i");
+  static const maxLength = 1000;
+
+  List<int> nestedList = List.generate(maxLength, (i) => i);
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(
+      const Duration(milliseconds: 1500),
+      (_) async {
+        nestedList = List.generate(Random().nextInt(maxLength), (i) => i)..shuffle();
+        setState(() {});
+        await Future.delayed(const Duration(milliseconds: 500));
+        nestedList = List.generate(Random().nextInt(maxLength), (i) => i)..shuffle();
+        setState(() {});
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +41,7 @@ class VerticalNestedExampleState extends State<VerticalNestedExample> {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.amber),
-      body: ImplicitlyAnimatedReorderableList<String>(
+      body: ImplicitlyAnimatedReorderableList<int>(
         padding: const EdgeInsets.all(24),
         items: nestedList,
         areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
@@ -71,7 +92,7 @@ class VerticalNestedExampleState extends State<VerticalNestedExample> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(item),
+                          Text('$item'),
                           /* const Handle(
                             child: Icon(Icons.menu),
                             capturePointer: true,
