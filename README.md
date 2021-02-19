@@ -13,7 +13,7 @@ Click [here](https://github.com/bnxm/implicitly_animated_reorderable_list/blob/m
 Add it to your `pubspec.yaml` file:
 ```yaml
 dependencies:
-  implicitly_animated_reorderable_list: ^0.4.0-dev+3
+  implicitly_animated_reorderable_list: ^0.4.0
 ```
 Install packages from the command line
 ```
