@@ -12,18 +12,18 @@ class _DiffArguments<E> {
 }
 
 class MyersDiff<E> {
-  static ItemDiffUtil eq;
-  static ItemDiffUtil cq;
+  static ItemDiffUtil? eq;
+  static ItemDiffUtil? cq;
 
   static int isolateThreshold = 1500;
 
   static Future<List<Diff>> withCallback<E>(
-    DiffCallback<E> cb, {
-    bool spawnIsolate,
+    DiffCallback<E?> cb, {
+    bool? spawnIsolate,
   }) {
-    return diff<E>(
-      cb.newList,
-      cb.oldList,
+    return diff<E?>(
+      cb.newList!,
+      cb.oldList!,
       areItemsTheSame: cb.areItemsTheSame,
       spawnIsolate: spawnIsolate,
     );
@@ -32,8 +32,8 @@ class MyersDiff<E> {
   static Future<List<Diff>> diff<E>(
     List<E> newList,
     List<E> oldList, {
-    ItemDiffUtil<E> areItemsTheSame,
-    bool spawnIsolate,
+    ItemDiffUtil<E>? areItemsTheSame,
+    bool? spawnIsolate,
   }) {
     eq = (a, b) => areItemsTheSame?.call(a, b) ?? a == b;
     cq = (a, b) => false;
@@ -55,9 +55,6 @@ List<Diff> _myersDiff<E>(_DiffArguments<E> args) {
   final List<E> oldList = args.oldList;
   final List<E> newList = args.newList;
 
-  if (oldList == null) throw ArgumentError('oldList is null');
-  if (newList == null) throw ArgumentError('newList is null');
-
   if (oldList == newList) return [];
 
   final oldSize = oldList.length;
@@ -72,12 +69,12 @@ List<Diff> _myersDiff<E>(_DiffArguments<E> args) {
   }
 
   final equals = MyersDiff.eq ?? (a, b) => a == b;
-  final path = _buildPath(oldList, newList, equals);
+  final path = _buildPath(oldList, newList, equals)!;
   final diffs = _buildPatch(path, oldList, newList)..sort();
   return diffs.reversed.toList(growable: true);
 }
 
-PathNode _buildPath<E>(
+PathNode? _buildPath<E>(
     List<E> oldList, List<E> newList, ItemDiffUtil<E> equals) {
   final oldSize = oldList.length;
   final newSize = newList.length;
@@ -85,7 +82,7 @@ PathNode _buildPath<E>(
   final int max = oldSize + newSize + 1;
   final int size = (2 * max) + 1;
   final int middle = size ~/ 2;
-  final List<PathNode> diagonal = List.filled(size, null);
+  final List<PathNode?> diagonal = List.filled(size, null);
 
   diagonal[middle + 1] = Snake(0, -1, null);
 
@@ -94,16 +91,16 @@ PathNode _buildPath<E>(
       final int kmiddle = middle + k;
       final int kplus = kmiddle + 1;
       final int kminus = kmiddle - 1;
-      PathNode prev;
+      PathNode? prev;
 
       int i;
       if ((k == -d) ||
           (k != d &&
-              diagonal[kminus].originIndex < diagonal[kplus].originIndex)) {
-        i = diagonal[kplus].originIndex;
+              diagonal[kminus]!.originIndex < diagonal[kplus]!.originIndex)) {
+        i = diagonal[kplus]!.originIndex;
         prev = diagonal[kplus];
       } else {
-        i = diagonal[kminus].originIndex + 1;
+        i = diagonal[kminus]!.originIndex + 1;
         prev = diagonal[kminus];
       }
 
@@ -133,25 +130,21 @@ PathNode _buildPath<E>(
 }
 
 List<Diff> _buildPatch<E>(PathNode path, List<E> oldList, List<E> newList) {
-  assert(path != null);
-
   final List<Diff> diffs = [];
 
   if (path.isSnake) {
     // ignore: parameter_assignments
-    path = path.previousNode;
+    path = path.previousNode!;
   }
 
-  while (path != null &&
-      path.previousNode != null &&
-      path.previousNode.revisedIndex >= 0) {
+  while (path.previousNode != null && path.previousNode!.revisedIndex >= 0) {
     assert(!path.isSnake);
 
     final i = path.originIndex;
     final j = path.revisedIndex;
 
     // ignore: parameter_assignments
-    path = path.previousNode;
+    path = path.previousNode!;
     final iAnchor = path.originIndex;
     final jAnchor = path.revisedIndex;
 
@@ -168,7 +161,7 @@ List<Diff> _buildPatch<E>(PathNode path, List<E> oldList, List<E> newList) {
 
     if (path.isSnake) {
       // ignore: parameter_assignments
-      path = path.previousNode;
+      path = path.previousNode!;
     }
   }
 

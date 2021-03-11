@@ -17,13 +17,13 @@ class Reorderable extends StatefulWidget {
   /// The [ReorderableBuilder] `animation` parameter supplies you with an animation you can use to
   /// transition between the normal and the dragged state of the item. The `inDrag` parameter
   /// indicates whether this item is currently being dragged/reordered.
-  final ReorderableBuilder builder;
+  final ReorderableBuilder? builder;
 
   /// Used, as needed, to build the child this Reorderable.
   ///
   /// This can be used to show a child that should not have
   /// any animation when being dragged or dropped.
-  final Widget child;
+  final Widget? child;
 
   /// Creates a reorderable widget that must be the parent of every
   /// item in an [ImplicitlyAnimatedReorderableList].
@@ -39,28 +39,35 @@ class Reorderable extends StatefulWidget {
   /// animation between dragged and normal state, you can also use the
   /// [child] as a shorthand instead.
   const Reorderable({
-    @required Key key,
+    required Key key,
     this.builder,
     this.child,
-  })  : assert(key != null),
-        assert(builder != null || child != null),
+  })  : assert(builder != null || child != null),
         super(key: key);
 
   @override
   ReorderableState createState() => ReorderableState();
 
-  static ReorderableState of(BuildContext context) {
+  static ReorderableState? of(BuildContext context) {
     return context.findAncestorStateOfType<ReorderableState>();
   }
 }
 
 class ReorderableState extends State<Reorderable>
     with SingleTickerProviderStateMixin {
-  Key key;
+  Key? key;
 
-  AnimationController _dragController;
-  CurvedAnimation _dragAnimation;
-  Animation<double> _translation;
+  late final _dragController = AnimationController(
+    duration: const Duration(milliseconds: 300),
+    vsync: this,
+  );
+
+  late final _dragAnimation = CurvedAnimation(
+    parent: _dragController,
+    curve: Curves.linear,
+  );
+
+  Animation<double>? _translation;
 
   bool _isVertical = true;
 
@@ -68,16 +75,6 @@ class ReorderableState extends State<Reorderable>
   void initState() {
     super.initState();
     key = widget.key ?? UniqueKey();
-
-    _dragController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _dragAnimation = CurvedAnimation(
-      parent: _dragController,
-      curve: Curves.linear,
-    );
   }
 
   bool _inDrag = false;
@@ -92,7 +89,7 @@ class ReorderableState extends State<Reorderable>
   // ignore: avoid_setters_without_getters
   set duration(Duration value) => _dragController.duration = value;
 
-  void setTranslation(Animation<double> animation) {
+  void setTranslation(Animation<double>? animation) {
     if (mounted) {
       setState(() {
         _translation = animation;
@@ -107,15 +104,13 @@ class ReorderableState extends State<Reorderable>
   }
 
   void _registerItem() {
-    final list = ImplicitlyAnimatedReorderableList.of(context);
-    assert(list != null,
-        'No ImplicitlyAnimatedListView was found in the hirachy!');
+    final list = ImplicitlyAnimatedReorderableList.of(context)!;
 
-    list?.registerItem(this);
+    list.registerItem(this);
     _dragController.duration = list.widget.settleDuration;
 
     inDrag = list.dragItem?.key == key && list.inDrag;
-    _isVertical = list?.isVertical ?? true;
+    _isVertical = list.isVertical;
   }
 
   @override
@@ -126,7 +121,7 @@ class ReorderableState extends State<Reorderable>
       if (widget.child != null) {
         return widget.child;
       } else {
-        return widget.builder(context, _dragAnimation, _inDrag);
+        return widget.builder!(context, _dragAnimation, _inDrag);
       }
     }();
 

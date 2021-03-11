@@ -1,18 +1,18 @@
-typedef ItemDiffUtil<E> = bool Function(E oldItem, E newItem);
+typedef ItemDiffUtil<E> = bool Function(E? oldItem, E? newItem);
 
 /// A Callback class used by DiffUtil while calculating the diff between two lists.
 mixin DiffCallback<E> {
   /// The list containing the new data.
-  List<E> get newList;
+  List<E>? get newList;
 
   /// The list containing the old data.
-  List<E> get oldList;
+  List<E>? get oldList;
 
   /// Returns the size of the old list.
-  int get oldListSize => oldList.length;
+  int get oldListSize => oldList!.length;
 
   /// Returns the size of the list.
-  int get newListSize => newList.length;
+  int get newListSize => newList!.length;
 
   /// Called by the DiffUtil to decide whether two object represent the same Item.
   /// For example, if your items have unique ids, this method should check their id equality.

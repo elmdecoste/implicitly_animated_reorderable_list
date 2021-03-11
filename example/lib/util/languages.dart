@@ -61,8 +61,8 @@ class Language {
   final String englishName;
   final String nativeName;
   const Language({
-    @required this.englishName,
-    @required this.nativeName,
+    required this.englishName,
+    required this.nativeName,
   });
 
   @override

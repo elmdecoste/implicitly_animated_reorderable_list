@@ -17,7 +17,7 @@ void main() {
     final diff = await MyersDiff.diff<_Model>(
       newItems,
       oldItems,
-      areItemsTheSame: (oldItem, newItem) => oldItem.id == newItem.id,
+      areItemsTheSame: (oldItem, newItem) => oldItem!.id == newItem!.id,
       // If you set this to false, everything will work as expected.
       spawnIsolate: true,
     );

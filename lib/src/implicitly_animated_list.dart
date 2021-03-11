@@ -16,7 +16,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   ///
   /// If not specified, the [ImplicitlyAnimatedList] uses the [itemBuilder] with
   /// the animation reversed.
-  final RemovedItemBuilder<Widget, E> removeItemBuilder;
+  final RemovedItemBuilder<Widget, E>? removeItemBuilder;
 
   /// An optional builder when an item in the list was changed but not its position.
   ///
@@ -26,7 +26,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   /// the new item.
   ///
   /// If not specified, changes will appear instantaneously.
-  final UpdatedItemBuilder<Widget, E> updateItemBuilder;
+  final UpdatedItemBuilder<Widget, E>? updateItemBuilder;
 
   /// Called by the DiffUtil to decide whether two object represent the same Item.
   /// For example, if your items have unique ids, this method should check their id equality.
@@ -46,7 +46,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   /// Usually you wont have to specify this value as the MyersDiff implementation will
   /// use its own metrics to decide, whether a new isolate has to be spawned or not for
   /// optimal performance.
-  final bool spawnIsolate;
+  final bool? spawnIsolate;
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -79,7 +79,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   /// [ScrollController.keepScrollOffset]). It can be used to read the current
   /// scroll position (see [ScrollController.offset]), or change it (see
   /// [ScrollController.animateTo]).
-  final ScrollController controller;
+  final ScrollController? controller;
 
   /// Whether this is the primary scroll view associated with the parent
   /// [PrimaryScrollController].
@@ -89,7 +89,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   ///
   /// Defaults to true when [scrollDirection] is [Axis.vertical] and
   /// [controller] is null.
-  final bool primary;
+  final bool? primary;
 
   /// How the scroll view should respond to user input.
   ///
@@ -97,7 +97,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   /// user stops dragging the scroll view.
   ///
   /// Defaults to matching platform conventions.
-  final ScrollPhysics physics;
+  final ScrollPhysics? physics;
 
   /// Whether the extent of the scroll view in the [scrollDirection] should be
   /// determined by the contents being viewed.
@@ -116,15 +116,15 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
   final bool shrinkWrap;
 
   /// The amount of space by which to inset the children.
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// Creates a Flutter ListView that implicitly animates between the changes
   /// of two lists.
   const ImplicitlyAnimatedList({
-    Key key,
-    @required this.items,
-    @required this.itemBuilder,
-    @required this.areItemsTheSame,
+    Key? key,
+    required this.items,
+    required this.itemBuilder,
+    required this.areItemsTheSame,
     this.removeItemBuilder,
     this.updateItemBuilder,
     this.insertDuration = const Duration(milliseconds: 500),
@@ -195,20 +195,17 @@ class SliverImplicitlyAnimatedList<E>
   /// a new isolate has to be spawned or not for optimal performance.
   /// {@endtemplate}
   const SliverImplicitlyAnimatedList({
-    Key key,
-    @required List<E> items,
-    @required AnimatedItemBuilder<Widget, E> itemBuilder,
-    @required ItemDiffUtil<E> areItemsTheSame,
-    RemovedItemBuilder<Widget, E> removeItemBuilder,
-    UpdatedItemBuilder<Widget, E> updateItemBuilder,
+    Key? key,
+    required List<E> items,
+    required AnimatedItemBuilder<Widget, E> itemBuilder,
+    required ItemDiffUtil<E> areItemsTheSame,
+    RemovedItemBuilder<Widget, E>? removeItemBuilder,
+    UpdatedItemBuilder<Widget, E>? updateItemBuilder,
     Duration insertDuration = const Duration(milliseconds: 500),
     Duration removeDuration = const Duration(milliseconds: 500),
     Duration updateDuration = const Duration(milliseconds: 500),
-    bool spawnIsolate,
-  })  : assert(itemBuilder != null),
-        assert(areItemsTheSame != null),
-        assert(items != null),
-        super(
+    bool? spawnIsolate,
+  }) : super(
           key: key,
           items: items,
           itemBuilder: itemBuilder,
@@ -233,9 +230,9 @@ class _SliverImplicitlyAnimatedListState<E>
   Widget build(BuildContext context) {
     return SliverAnimatedList(
       key: animatedListKey,
-      initialItemCount: newList.length,
+      initialItemCount: newList!.length,
       itemBuilder: (context, index, animation) {
-        final item = data[index];
+        final E item = data[index];
         final didChange = changes[item] != null;
 
         if (updateItemBuilder != null && didChange) {

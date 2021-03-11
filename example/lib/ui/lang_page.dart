@@ -11,7 +11,7 @@ import 'ui.dart';
 
 class LanguagePage extends StatefulWidget {
   const LanguagePage({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -34,13 +34,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
 
   bool inReorder = false;
 
-  ScrollController scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    scrollController = ScrollController();
-  }
+  ScrollController scrollController = ScrollController();
 
   void onReorderFinished(List<Language> newItems) {
     scrollController.jumpTo(scrollController.offset);
@@ -87,7 +81,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
   Widget _buildVerticalLanguageList() {
     final theme = Theme.of(context);
 
-    Widget buildReorderable(
+    Reorderable buildReorderable(
       Language lang,
       Widget Function(Widget tile) transition,
     ) {
@@ -105,15 +99,14 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
             );
 
             return AnimatedBuilder(
-              child: tile,
               animation: dragAnimation,
-              builder: (context, tile) {
+              builder: (context, _) {
                 final t = dragAnimation.value;
                 final color = Color.lerp(Colors.white, Colors.grey.shade100, t);
 
-                return Box(
+                return Material(
                   color: color,
-                  elevation: lerpDouble(0, 8, t),
+                  elevation: lerpDouble(0, 8, t)!,
                   child: transition(tile),
                 );
               },
@@ -219,7 +212,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
               const SizedBox(height: 4),
               Text(
                 'Delete',
-                style: textTheme.bodyText2.copyWith(
+                style: textTheme.bodyText2?.copyWith(
                   color: Colors.white,
                 ),
               ),
@@ -242,13 +235,13 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
         child: ListTile(
           title: Text(
             lang.nativeName,
-            style: textTheme.bodyText2.copyWith(
+            style: textTheme.bodyText2?.copyWith(
               fontSize: 16,
             ),
           ),
           subtitle: Text(
             lang.englishName,
-            style: textTheme.bodyText1.copyWith(
+            style: textTheme.bodyText1?.copyWith(
               fontSize: 15,
             ),
           ),
@@ -258,7 +251,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
             child: Center(
               child: Text(
                 '${selectedLanguages.indexOf(lang) + 1}',
-                style: textTheme.bodyText2.copyWith(
+                style: textTheme.bodyText2?.copyWith(
                   color: theme.accentColor,
                   fontSize: 16,
                 ),
@@ -282,7 +275,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
-    final elevation = lerpDouble(0, 8, t);
+    final elevation = lerpDouble(0, 8, t)!;
 
     return Handle(
       delay: const Duration(milliseconds: 500),
@@ -350,7 +343,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
             ),
             title: Text(
               'Add a language',
-              style: textTheme.bodyText1.copyWith(
+              style: textTheme.bodyText1?.copyWith(
                 fontSize: 16,
               ),
             ),
@@ -380,7 +373,7 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Text(
             headline,
-            style: textTheme.bodyText1.copyWith(
+            style: textTheme.bodyText1?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),

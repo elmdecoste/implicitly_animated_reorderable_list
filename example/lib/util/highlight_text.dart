@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 class HighlightText extends StatefulWidget {
-  final TextStyle activeStyle;
-  final TextStyle style;
+  final TextStyle? activeStyle;
+  final TextStyle? style;
   final String query;
   final String text;
   final TextAlign textAlign;
-  final TextDirection textDirection;
+  final TextDirection? textDirection;
   final bool softWrap;
   final TextOverflow overflow;
   final double textScaleFactor;
-  final int maxLines;
+  final int? maxLines;
   const HighlightText({
-    Key key,
+    Key? key,
     this.activeStyle,
     this.style,
     this.query = '',
@@ -30,7 +30,7 @@ class HighlightText extends StatefulWidget {
 }
 
 class _HighlightTextState extends State<HighlightText> {
-  TextStyle get style => widget.style ?? Theme.of(context).textTheme.bodyText2;
+  TextStyle get style => widget.style ?? Theme.of(context).textTheme.bodyText2!;
   TextStyle get activeStyle =>
       widget.activeStyle ?? style.copyWith(fontWeight: FontWeight.bold);
 
@@ -48,7 +48,7 @@ class _HighlightTextState extends State<HighlightText> {
       text: TextSpan(
         children: idxs.map((idx) {
           return TextSpan(
-            text: widget.text?.substring(idx.first, idx.second) ?? '',
+            text: widget.text.substring(idx.first, idx.second),
             style: idx.third ? activeStyle : style,
           );
         }).toList(),
@@ -63,8 +63,8 @@ String replaceLast(String source, String matcher, String replacement) {
 }
 
 List<Triplet<int, int, bool>> getQueryHighlights(String text, String query) {
-  final t = text?.toLowerCase() ?? '';
-  final q = query?.toLowerCase() ?? '';
+  final t = text.toLowerCase();
+  final q = query.toLowerCase();
 
   if (t.isEmpty || q.isEmpty || !t.contains(q)) return [Triplet(0, t.length, false)];
 
@@ -84,7 +84,8 @@ List<Triplet<int, int, bool>> getQueryHighlights(String text, String query) {
     idxs.add(Triplet(0, t.length, false));
   } else {
     final List<Triplet<int, int, bool>> result = [];
-    Triplet<int, int, bool> last;
+    Triplet<int, int, bool>? last;
+
     for (final idx in idxs) {
       final isLast = idx == idxs.last;
       if (last == null) {
@@ -116,7 +117,6 @@ class Triplet<A, B, C> {
   A first;
   B second;
   C third;
-  DateTime time;
   Triplet(
     this.first,
     this.second,
@@ -124,9 +124,9 @@ class Triplet<A, B, C> {
   );
 
   Triplet copyWith({
-    A first,
-    B second,
-    C third,
+    A? first,
+    B? second,
+    C? third,
   }) {
     return Triplet(
       first ?? this.first,

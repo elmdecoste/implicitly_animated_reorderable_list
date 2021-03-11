@@ -42,42 +42,39 @@ class Handle extends StatefulWidget {
   /// A Handle must have a [Reorderable] and an [ImplicitlyAnimatedReorderableList]
   /// as its ancestor.
   const Handle({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
     this.delay = Duration.zero,
     this.capturePointer = true,
     this.vibrate = true,
-  })  : assert(delay != null),
-        assert(child != null),
-        assert(vibrate != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   _HandleState createState() => _HandleState();
 }
 
 class _HandleState extends State<Handle> {
-  ScrollableState _parent;
+  ScrollableState? _parent;
   // A custom handler used to cancel the pending onDragStart callbacks.
-  Handler _handler;
+  Handler? _handler;
   // The parent Reorderable item.
-  ReorderableState _reorderable;
+  ReorderableState? _reorderable;
   // The parent list.
-  ImplicitlyAnimatedReorderableListState _list;
+  ImplicitlyAnimatedReorderableListState? _list;
   // Whether the ImplicitlyAnimatedReorderableList has a
   // scrollDirection of Axis.vertical.
   bool get _isVertical => _list?.isVertical ?? true;
 
-  Offset _pointer;
-  double _downOffset;
-  double _startOffset;
-  double _currentOffset;
+  Offset? _pointer;
+  late double _downOffset;
+  double? _startOffset;
+  double? _currentOffset;
   double get _delta => (_currentOffset ?? 0) - (_startOffset ?? 0);
 
   // Use flags from the list as this State object is being
   // recreated between dragged and normal state.
-  bool get _inDrag => _list.inDrag ?? false;
-  bool get _inReorder => _list.inReorder ?? false;
+  bool get _inDrag => _list!.inDrag;
+  bool get _inReorder => _list!.inReorder;
 
   // The pixel offset of a possible parent Scrollable
   // used to capture it.
@@ -88,18 +85,18 @@ class _HandleState extends State<Handle> {
     // initiate a new reorder.
     if (_inReorder) return;
 
-    final moveDelta = (_downOffset - _currentOffset).abs();
+    final moveDelta = (_downOffset - _currentOffset!).abs();
     if (moveDelta > 10.0) {
       return;
     }
 
-    _parentPixels = _parent?.position?.pixels ?? 0.0;
+    _parentPixels = _parent?.position.pixels ?? 0.0;
 
     _captureParentList();
     _startOffset = _currentOffset;
 
     _list?.onDragStarted(_reorderable?.key);
-    _reorderable.rebuild();
+    _reorderable!.rebuild();
 
     _vibrate();
   }
@@ -126,7 +123,7 @@ class _HandleState extends State<Handle> {
     // list unscrollable (e.g. when the Handle wraps a whole ListTile).
     //
     // This seems to be the only working solution to this problem.
-    _parent?.position?.jumpTo(_parentPixels);
+    _parent?.position.jumpTo(_parentPixels);
   }
 
   @override
@@ -137,7 +134,7 @@ class _HandleState extends State<Handle> {
     _reorderable = Reorderable.of(context);
     assert(_reorderable != null,
         'No ancestor Reorderable was found in the hierarchy!');
-    _parent = Scrollable.of(_list.context);
+    _parent = Scrollable.of(_list!.context);
 
     // Sometimes the cancel callbacks of the GestureDetector
     // are erroneously invoked. Use a plain Listener instead
@@ -183,5 +180,5 @@ class _HandleState extends State<Handle> {
     if (_inDrag) _onDragEnded();
   }
 
-  double _offset(Offset offset) => _isVertical ? offset.dy : offset.dx;
+  double _offset(Offset? offset) => _isVertical ? offset!.dy : offset!.dx;
 }

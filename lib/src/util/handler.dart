@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 /// Additionally it supports canceling the future by not invoking the callback function
 /// if it was canceled before.
 class Handler {
-  VoidCallback _callback;
+  VoidCallback? _callback;
   bool _canceled = false;
   bool _finished = false;
   bool _invoked = false;

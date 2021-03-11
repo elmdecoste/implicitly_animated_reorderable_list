@@ -6,7 +6,7 @@ import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import '../util/util.dart';
 
 class LanguageSearchPage extends StatefulWidget {
-  const LanguageSearchPage({Key key}) : super(key: key);
+  const LanguageSearchPage({Key? key}) : super(key: key);
 
   @override
   _LanguageSearchPageState createState() => _LanguageSearchPageState();
@@ -15,17 +15,12 @@ class LanguageSearchPage extends StatefulWidget {
 class _LanguageSearchPageState extends State<LanguageSearchPage> {
   final List<Language> filteredLanguages = List.from(languages);
 
-  TextEditingController _controller;
-  String get text => _controller.text.trim();
+  late final _controller = TextEditingController()
+    ..addListener(
+      _onQueryChanged,
+    );
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController()
-      ..addListener(
-        _onQueryChanged,
-      );
-  }
+  String get text => _controller.text.trim();
 
   void _onQueryChanged() {
     filteredLanguages.clear();
@@ -79,10 +74,10 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
         title: HighlightText(
           query: text,
           text: lang.nativeName,
-          style: textTheme.bodyText2.copyWith(
+          style: textTheme.bodyText2?.copyWith(
             fontSize: 16,
           ),
-          activeStyle: textTheme.bodyText2.copyWith(
+          activeStyle: textTheme.bodyText2?.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.w900,
           ),
@@ -90,10 +85,10 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
         subtitle: HighlightText(
           query: text,
           text: lang.englishName,
-          style: textTheme.bodyText1.copyWith(
+          style: textTheme.bodyText1?.copyWith(
             fontSize: 15,
           ),
-          activeStyle: textTheme.bodyText1.copyWith(
+          activeStyle: textTheme.bodyText1?.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
@@ -112,7 +107,8 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
       appBar: _buildAppBar(padding, theme, textTheme),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
-        child: filteredLanguages.isNotEmpty ? _buildList() : _buildNoLanguagesPlaceholder(),
+        child:
+            filteredLanguages.isNotEmpty ? _buildList() : _buildNoLanguagesPlaceholder(),
       ),
     );
   }
@@ -139,7 +135,7 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
     );
   }
 
-  Widget _buildAppBar(double padding, ThemeData theme, TextTheme textTheme) {
+  PreferredSize _buildAppBar(double padding, ThemeData theme, TextTheme textTheme) {
     return PreferredSize(
       preferredSize: Size.fromHeight(56 + padding),
       child: Box(
@@ -162,7 +158,7 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
                       autofocus: true,
                       controller: _controller,
                       textInputAction: TextInputAction.search,
-                      style: textTheme.bodyText2.copyWith(
+                      style: textTheme.bodyText2?.copyWith(
                         color: Colors.white,
                         fontSize: 18,
                       ),
@@ -170,7 +166,7 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                         hintText: 'Search for a language',
-                        hintStyle: textTheme.bodyText2.copyWith(
+                        hintStyle: textTheme.bodyText2?.copyWith(
                           color: Colors.grey.shade200,
                           fontSize: 16,
                         ),

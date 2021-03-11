@@ -25,7 +25,7 @@ Future<void> main() async {
   await MyersDiff.diff<Item>(
     newList,
     list,
-    areItemsTheSame: (a, b) => a.id == b.id,
+    areItemsTheSame: (a, b) => a!.id == b!.id,
   );
 
   final millis = DateTime.now().difference(start).inMilliseconds;

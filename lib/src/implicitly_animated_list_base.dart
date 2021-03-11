@@ -26,7 +26,7 @@ abstract class ImplicitlyAnimatedListBase<W extends Widget, E>
   ///
   /// If not specified, the [ImplicitlyAnimatedList] uses the [itemBuilder] with
   /// the animation reversed.
-  final RemovedItemBuilder<W, E> removeItemBuilder;
+  final RemovedItemBuilder<W, E>? removeItemBuilder;
 
   /// An optional builder when an item in the list was changed but not its position.
   ///
@@ -36,7 +36,7 @@ abstract class ImplicitlyAnimatedListBase<W extends Widget, E>
   /// the new item.
   ///
   /// If not specified, changes will appear instantaneously.
-  final UpdatedItemBuilder<W, E> updateItemBuilder;
+  final UpdatedItemBuilder<W, E>? updateItemBuilder;
 
   /// The data that this [ImplicitlyAnimatedList] should represent.
   final List<E> items;
@@ -59,25 +59,19 @@ abstract class ImplicitlyAnimatedListBase<W extends Widget, E>
   /// Usually you wont have to specify this value as the MyersDiff implementation will
   /// use its own metrics to decide, whether a new isolate has to be spawned or not for
   /// optimal performance.
-  final bool spawnIsolate;
+  final bool? spawnIsolate;
   const ImplicitlyAnimatedListBase({
-    Key key,
-    @required this.items,
-    @required this.areItemsTheSame,
-    @required this.itemBuilder,
-    @required this.removeItemBuilder,
-    @required this.updateItemBuilder,
-    @required this.insertDuration,
-    @required this.removeDuration,
-    @required this.updateDuration,
-    @required this.spawnIsolate,
-  })  : assert(items != null),
-        assert(areItemsTheSame != null),
-        assert(itemBuilder != null),
-        assert(insertDuration != null),
-        assert(removeDuration != null),
-        assert(updateDuration != null),
-        super(key: key);
+    Key? key,
+    required this.items,
+    required this.areItemsTheSame,
+    required this.itemBuilder,
+    required this.removeItemBuilder,
+    required this.updateItemBuilder,
+    required this.insertDuration,
+    required this.removeDuration,
+    required this.updateDuration,
+    required this.spawnIsolate,
+  }) : super(key: key);
 }
 
 abstract class ImplicitlyAnimatedListBaseState<
@@ -85,38 +79,45 @@ abstract class ImplicitlyAnimatedListBaseState<
     B extends ImplicitlyAnimatedListBase<W, E>,
     E> extends State<B> with DiffCallback<E>, TickerProviderStateMixin {
   @protected
-  GlobalKey<SliverAnimatedListState> animatedListKey;
+  GlobalKey<SliverAnimatedListState>? animatedListKey;
 
   @nonVirtual
   @protected
-  SliverAnimatedListState get list => animatedListKey.currentState;
+  SliverAnimatedListState? get list => animatedListKey!.currentState;
 
-  DiffDelegate _delegate;
-  CancelableOperation _diffOperation;
+  late DiffDelegate _delegate;
+  CancelableOperation? _diffOperation;
 
   // Animation controller for custom animation that are not supported
   // by the [AnimatedList], like updates.
-  AnimationController _updateAnimController;
-  AnimationController get updateAnimController => _updateAnimController;
-  Animation<double> _updateAnimation;
-  Animation<double> get updateAnimation => _updateAnimation;
+  late final updateAnimController = AnimationController(vsync: this);
+  late final Animation<double> updateAnimation = TweenSequence([
+    TweenSequenceItem(
+      tween: Tween(begin: 1.0, end: 0.0),
+      weight: 0.5,
+    ),
+    TweenSequenceItem(
+      tween: Tween(begin: 0.0, end: 1.0),
+      weight: 0.5,
+    ),
+  ]).animate(updateAnimController);
 
   // The currently active items.
-  List<E> _data;
+  late List<E> _data;
   List<E> get data => _data;
   // The items that have newly come in that
   // will get diffed into the dataset.
-  List<E> _newItems;
+  late List<E> _newItems;
   // The previous dataSet.
-  List<E> _oldItems;
+  late List<E> _oldItems;
 
   @nonVirtual
   @override
-  List<E> get newList => _newItems;
+  List<E>? get newList => _newItems;
 
   @nonVirtual
   @override
-  List<E> get oldList => _oldItems;
+  List<E>? get oldList => _oldItems;
 
   final Map<E, E> _changes = {};
 
@@ -129,10 +130,10 @@ abstract class ImplicitlyAnimatedListBaseState<
   AnimatedItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
   @nonVirtual
   @protected
-  RemovedItemBuilder<W, E> get removeItemBuilder => widget.removeItemBuilder;
+  RemovedItemBuilder<W, E>? get removeItemBuilder => widget.removeItemBuilder;
   @nonVirtual
   @protected
-  UpdatedItemBuilder<W, E> get updateItemBuilder => widget.updateItemBuilder;
+  UpdatedItemBuilder<W, E>? get updateItemBuilder => widget.updateItemBuilder;
 
   @override
   void initState() {
@@ -142,29 +143,17 @@ abstract class ImplicitlyAnimatedListBaseState<
     _data = List<E>.from(widget.items);
     _delegate = DiffDelegate(this);
 
-    _updateAnimController = AnimationController(vsync: this);
-    _updateAnimation = TweenSequence([
-      TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.0),
-        weight: 0.5,
-      ),
-      TweenSequenceItem(
-        tween: Tween(begin: 0.0, end: 1.0),
-        weight: 0.5,
-      ),
-    ]).animate(_updateAnimController);
-
     didUpdateWidget(widget);
   }
 
   @override
   void didUpdateWidget(ImplicitlyAnimatedListBase oldWidget) {
-    super.didUpdateWidget(oldWidget);
+    super.didUpdateWidget(oldWidget as B);
 
     _newItems = List<E>.from(widget.items);
     _oldItems = List<E>.from(data);
 
-    _updateAnimController.duration = widget.updateDuration;
+    updateAnimController.duration = widget.updateDuration;
 
     _calcDiffs();
   }
@@ -188,7 +177,7 @@ abstract class ImplicitlyAnimatedListBaseState<
         MyersDiff.withCallback<E>(this, spawnIsolate: widget.spawnIsolate),
       );
 
-      _diffOperation.then((diffs) {
+      _diffOperation?.then((diffs) {
         // diffs is null when the operation
         // gets canceled.
         if (diffs == null || !mounted) return;
@@ -197,7 +186,7 @@ abstract class ImplicitlyAnimatedListBaseState<
           _delegate.applyDiffs(diffs);
           _data = List<E>.from(_newItems);
 
-          _updateAnimController
+          updateAnimController
             ..reset()
             ..forward();
         });
@@ -224,20 +213,20 @@ abstract class ImplicitlyAnimatedListBaseState<
   @protected
   @override
   void onInserted(int index, E item) {
-    list.insertItem(index, duration: widget.insertDuration);
+    list!.insertItem(index, duration: widget.insertDuration);
   }
 
   @mustCallSuper
   @protected
   @override
   void onRemoved(int index) {
-    final item = oldList[index];
+    final item = oldList![index];
 
-    list.removeItem(
+    list!.removeItem(
       index,
       (context, animation) {
         if (removeItemBuilder != null) {
-          return removeItemBuilder(context, animation, item);
+          return removeItemBuilder!(context, animation, item);
         }
 
         return itemBuilder(context, animation, item, index);
@@ -274,19 +263,19 @@ abstract class ImplicitlyAnimatedListBaseState<
     final oldItem = _changes[newItem];
 
     return AnimatedBuilder(
-      animation: _updateAnimation,
+      animation: updateAnimation,
       builder: (context, _) {
-        final value = _updateAnimController.value;
+        final value = updateAnimController.value;
         final item = value < 0.5 ? oldItem : newItem;
 
-        return updateItemBuilder(context, _updateAnimation, item);
+        return updateItemBuilder!(context, updateAnimation, item!);
       },
     );
   }
 
   @override
   void dispose() {
-    _updateAnimController.dispose();
+    updateAnimController.dispose();
     super.dispose();
   }
 }
