@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
 
@@ -18,7 +17,8 @@ class LanguagePage extends StatefulWidget {
   _LanguagePageState createState() => _LanguagePageState();
 }
 
-class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderStateMixin {
+class _LanguagePageState extends State<LanguagePage>
+    with SingleTickerProviderStateMixin {
   static const double _horizontalHeight = 96;
   static const List<String> options = [
     'Shuffle',
@@ -87,32 +87,29 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
     ) {
       return Reorderable(
         key: ValueKey(lang),
-        builder: (context, dragAnimation, inDrag) => AnimatedBuilder(
-          animation: dragAnimation,
-          builder: (context, child) {
-            final tile = Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                _buildTile(lang),
-                const Divider(height: 0),
-              ],
-            );
+        builder: (context, dragAnimation, inDrag) {
+          final tile = Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _buildTile(lang),
+              const Divider(height: 0),
+            ],
+          );
 
-            return AnimatedBuilder(
-              animation: dragAnimation,
-              builder: (context, _) {
-                final t = dragAnimation.value;
-                final color = Color.lerp(Colors.white, Colors.grey.shade100, t);
+          return AnimatedBuilder(
+            animation: dragAnimation,
+            builder: (context, _) {
+              final t = dragAnimation.value;
+              final color = Color.lerp(Colors.white, Colors.grey.shade100, t);
 
-                return Material(
-                  color: color,
-                  elevation: lerpDouble(0, 8, t)!,
-                  child: transition(tile),
-                );
-              },
-            );
-          },
-        ),
+              return Material(
+                color: color,
+                elevation: lerpDouble(0, 8, t)!,
+                child: transition(tile),
+              );
+            },
+          );
+        },
       );
     }
 
@@ -161,7 +158,8 @@ class _LanguagePageState extends State<LanguagePage> with SingleTickerProviderSt
         scrollDirection: Axis.horizontal,
         areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
         onReorderStarted: (item, index) => setState(() => inReorder = true),
-        onReorderFinished: (item, from, to, newItems) => onReorderFinished(newItems),
+        onReorderFinished: (item, from, to, newItems) =>
+            onReorderFinished(newItems),
         itemBuilder: (context, itemAnimation, item, index) {
           return Reorderable(
             key: ValueKey(item.toString()),

@@ -1,3 +1,11 @@
+## 0.4.0-dev+5
+
+* Removes unnecessary AnimatedBuilder in example
+
+## 0.4.0-dev+4
+
+* Move to null safety
+
 ## 0.4.0
 * **Added** NNBD support
 * **Fixed** #19, #49, #50, #52
