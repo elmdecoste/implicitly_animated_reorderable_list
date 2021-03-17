@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'src.dart';
 
 /// A Flutter ListView that implicitly animates between the changes of two lists.
-class ImplicitlyAnimatedList<E> extends StatelessWidget {
+class ImplicitlyAnimatedList<E extends Object> extends StatelessWidget {
   /// The current data that this [ImplicitlyAnimatedList] should represent.
   final List<E> items;
 
@@ -170,7 +170,7 @@ class ImplicitlyAnimatedList<E> extends StatelessWidget {
 }
 
 /// A Flutter Sliver that implicitly animates between the changes of two lists.
-class SliverImplicitlyAnimatedList<E>
+class SliverImplicitlyAnimatedList<E extends Object>
     extends ImplicitlyAnimatedListBase<Widget, E> {
   /// Creates a Flutter Sliver that implicitly animates between the changes of two lists.
   ///
@@ -223,9 +223,8 @@ class SliverImplicitlyAnimatedList<E>
       _SliverImplicitlyAnimatedListState<E>();
 }
 
-class _SliverImplicitlyAnimatedListState<E>
-    extends ImplicitlyAnimatedListBaseState<Widget,
-        SliverImplicitlyAnimatedList<E>, E> {
+class _SliverImplicitlyAnimatedListState<E extends Object>
+    extends ImplicitlyAnimatedListBaseState<Widget, SliverImplicitlyAnimatedList<E>, E> {
   @override
   Widget build(BuildContext context) {
     return SliverAnimatedList(

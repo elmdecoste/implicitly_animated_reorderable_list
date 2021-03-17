@@ -1,4 +1,4 @@
-typedef ItemDiffUtil<E> = bool Function(E? oldItem, E? newItem);
+typedef ItemDiffUtil<E> = bool Function(E oldItem, E newItem);
 
 /// A Callback class used by DiffUtil while calculating the diff between two lists.
 mixin DiffCallback<E> {

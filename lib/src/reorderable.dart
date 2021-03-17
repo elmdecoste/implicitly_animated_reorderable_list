@@ -53,9 +53,8 @@ class Reorderable extends StatefulWidget {
   }
 }
 
-class ReorderableState extends State<Reorderable>
-    with SingleTickerProviderStateMixin {
-  Key? key;
+class ReorderableState extends State<Reorderable> with SingleTickerProviderStateMixin {
+  late Key key = widget.key ?? UniqueKey();
 
   late final _dragController = AnimationController(
     duration: const Duration(milliseconds: 300),
@@ -70,12 +69,6 @@ class ReorderableState extends State<Reorderable>
   Animation<double>? _translation;
 
   bool _isVertical = true;
-
-  @override
-  void initState() {
-    super.initState();
-    key = widget.key ?? UniqueKey();
-  }
 
   bool _inDrag = false;
   bool get inDrag => _inDrag;

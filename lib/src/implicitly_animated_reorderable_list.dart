@@ -13,7 +13,7 @@ typedef ReorderFinishedCallback<E> = void Function(
 
 /// A Flutter ListView that implicitly animates between the changes of two lists with
 /// the support to reorder its items.
-class ImplicitlyAnimatedReorderableList<E>
+class ImplicitlyAnimatedReorderableList<E extends Object>
     extends ImplicitlyAnimatedListBase<Reorderable, E> {
   /// Whether the scroll view scrolls in the reading direction.
   ///
@@ -200,8 +200,9 @@ class ImplicitlyAnimatedReorderableList<E>
   }
 }
 
-class ImplicitlyAnimatedReorderableListState<E> extends ImplicitlyAnimatedListBaseState<
-    Reorderable, ImplicitlyAnimatedReorderableList<E>, E> {
+class ImplicitlyAnimatedReorderableListState<E extends Object>
+    extends ImplicitlyAnimatedListBaseState<Reorderable,
+        ImplicitlyAnimatedReorderableList<E>, E> {
   // The key of the custom scroll view.
   final GlobalKey _listKey = GlobalKey(debugLabel: 'list_key');
   // The key of the draggedItem.
@@ -278,7 +279,7 @@ class ImplicitlyAnimatedReorderableListState<E> extends ImplicitlyAnimatedListBa
   }
 
   @override
-  void didUpdateWidget(ImplicitlyAnimatedReorderableList<E?> oldWidget) {
+  void didUpdateWidget(ImplicitlyAnimatedReorderableList<E> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.controller != null && widget.controller != _controller) {
@@ -674,7 +675,7 @@ class ImplicitlyAnimatedReorderableListState<E> extends ImplicitlyAnimatedListBa
               final Reorderable reorderable = buildItem(
                 context,
                 animation,
-                data[index]!,
+                data[index],
                 index,
               ) as Reorderable;
 
