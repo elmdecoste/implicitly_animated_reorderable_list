@@ -196,14 +196,12 @@ class ImplicitlyAnimatedReorderableList<E>
       ImplicitlyAnimatedReorderableListState<E>();
 
   static ImplicitlyAnimatedReorderableListState? of(BuildContext context) {
-    return context
-        .findAncestorStateOfType<ImplicitlyAnimatedReorderableListState>();
+    return context.findAncestorStateOfType<ImplicitlyAnimatedReorderableListState>();
   }
 }
 
-class ImplicitlyAnimatedReorderableListState<E>
-    extends ImplicitlyAnimatedListBaseState<Reorderable,
-        ImplicitlyAnimatedReorderableList<E>, E> {
+class ImplicitlyAnimatedReorderableListState<E> extends ImplicitlyAnimatedListBaseState<
+    Reorderable, ImplicitlyAnimatedReorderableList<E>, E> {
   // The key of the custom scroll view.
   final GlobalKey _listKey = GlobalKey(debugLabel: 'list_key');
   // The key of the draggedItem.
@@ -317,13 +315,11 @@ class ImplicitlyAnimatedReorderableListState<E>
 
     // Allow the dragged item to be overscrolled to allow for
     // continous scrolling while in drag.
-    final overscrollBound =
-        _canScroll && !(hasHeader || hasFooter) ? _dragSize : 0;
+    final overscrollBound = _canScroll && !(hasHeader || hasFooter) ? _dragSize : 0;
     // Constrain the dragged item to the bounds of the list.
     const epsilon = 2.0;
-    final minDelta = (_headerHeight - (dragItem!.start + overscrollBound)) -
-        _scrollDelta -
-        epsilon;
+    final minDelta =
+        (_headerHeight - (dragItem!.start + overscrollBound)) - _scrollDelta - epsilon;
     final maxDelta = ((_maxScrollOffset + _listSize + overscrollBound) -
             (dragItem!.bottom + _footerHeight)) -
         _scrollDelta +
@@ -375,8 +371,7 @@ class ImplicitlyAnimatedReorderableListState<E>
     }
   }
 
-  void _dispatchMove(Key? key, double delta,
-      {VoidCallback? onEnd, Duration? duration}) {
+  void _dispatchMove(Key? key, double delta, {VoidCallback? onEnd, Duration? duration}) {
     double value = 0.0;
 
     // Remove and stop the old controller if there was one
@@ -434,8 +429,7 @@ class ImplicitlyAnimatedReorderableListState<E>
       final dragBox = _dragKey.renderBox;
       if (dragBox == null) return;
 
-      final dragOffset =
-          dragBox.localToGlobal(Offset.zero, ancestor: context.renderBox);
+      final dragOffset = dragBox.localToGlobal(Offset.zero, ancestor: context.renderBox);
       final dragItemStart = isVertical ? dragOffset.dy : dragOffset.dx;
       final dragItemEnd = dragItemStart + _dragSize;
 
@@ -619,8 +613,7 @@ class ImplicitlyAnimatedReorderableListState<E>
     final needsRebuild = _listSize == 0 || inDrag != _prevInDrag;
     _prevInDrag = inDrag;
 
-    double getSizeOfKey(GlobalKey key) =>
-        (isVertical ? key.height : key.width) ?? 0.0;
+    double getSizeOfKey(GlobalKey key) => (isVertical ? key.height : key.width) ?? 0.0;
 
     postFrame(() {
       _listSize = getSizeOfKey(_listKey);
@@ -634,7 +627,12 @@ class ImplicitlyAnimatedReorderableListState<E>
   }
 
   void _measureChild(Key? key, [int? index]) {
-    final box = _items[key]!.context.renderBox;
+    final item = _items[key];
+    if (item == null || !mounted || !item.mounted) {
+      return;
+    }
+
+    final box = item.context.renderBox;
     final offset = _itemOffset(key)?.translate(
       isVertical ? 0 : scrollOffset,
       isVertical ? scrollOffset : 0,
@@ -742,8 +740,7 @@ class ImplicitlyAnimatedReorderableListState<E>
   }
 
   Widget _buildDraggedItem() {
-    final EdgeInsets listPadding =
-        widget.padding as EdgeInsets? ?? EdgeInsets.zero;
+    final EdgeInsets listPadding = widget.padding as EdgeInsets? ?? EdgeInsets.zero;
 
     return ValueListenableBuilder<double>(
       // ignore: sort_child_properties_last
@@ -810,8 +807,7 @@ class ImplicitlyAnimatedReorderableListState<E>
         }
       })
       ..addStatusListener((status) {
-        if (status == AnimationStatus.completed ||
-            status == AnimationStatus.dismissed) {
+        if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
           didUpdateList = false;
         }
       });
