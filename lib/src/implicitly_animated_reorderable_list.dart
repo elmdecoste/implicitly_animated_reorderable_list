@@ -817,7 +817,11 @@ class ImplicitlyAnimatedReorderableListState<E extends Object>
   @override
   void dispose() {
     _scrollAdjuster?.cancel();
-    _controller?.dispose();
+
+    if (widget.controller == null) {
+      _controller?.dispose();
+    }
+
     super.dispose();
   }
 }
