@@ -74,10 +74,9 @@ abstract class ImplicitlyAnimatedListBase<W extends Widget, E extends Object>
   }) : super(key: key);
 }
 
-abstract class ImplicitlyAnimatedListBaseState<
-    W extends Widget,
-    B extends ImplicitlyAnimatedListBase<W, E>,
-    E extends Object> extends State<B> with DiffCallback<E>, TickerProviderStateMixin {
+abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
+        B extends ImplicitlyAnimatedListBase<W, E>, E extends Object>
+    extends State<B> with DiffCallback<E>, TickerProviderStateMixin {
   @protected
   GlobalKey<SliverAnimatedListState> animatedListKey = GlobalKey();
 
@@ -202,7 +201,8 @@ abstract class ImplicitlyAnimatedListBaseState<
   @nonVirtual
   @protected
   @override
-  bool areItemsTheSame(E oldItem, E newItem) => widget.areItemsTheSame(oldItem, newItem);
+  bool areItemsTheSame(E oldItem, E newItem) =>
+      widget.areItemsTheSame(oldItem, newItem);
 
   @mustCallSuper
   @protected
@@ -244,7 +244,8 @@ abstract class ImplicitlyAnimatedListBaseState<
 
   @nonVirtual
   @protected
-  Widget buildItem(BuildContext context, Animation<double> animation, E item, int index) {
+  Widget buildItem(
+      BuildContext context, Animation<double> animation, E item, int index) {
     if (updateItemBuilder != null && changes[item] != null) {
       return buildUpdatedItemWidget(item);
     }

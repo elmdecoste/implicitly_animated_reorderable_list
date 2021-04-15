@@ -22,7 +22,7 @@ class TestPageState extends State<TestPage> {
   void initState() {
     super.initState();
 
-    crazyListOperationMadness();
+    // crazyListOperationMadness();
   }
 
   void crazyListOperationMadness() {
@@ -52,70 +52,70 @@ class TestPageState extends State<TestPage> {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.amber),
-      body: ImplicitlyAnimatedReorderableList<Test>(
-        padding: const EdgeInsets.all(24),
-        items: nestedList,
-        areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
-        onReorderFinished: (item, from, to, newList) {
-          setState(() {
-            nestedList
-              ..clear()
-              ..addAll(newList);
-          });
-        },
-        header: Container(
-          height: 120,
-          color: Colors.red,
-          child: Center(
-            child: Text(
-              'Header',
-              style: textTheme.headline6?.copyWith(color: Colors.white),
+      body: Scrollbar(
+        child: ImplicitlyAnimatedReorderableList<Test>(
+          padding: const EdgeInsets.all(24),
+          items: nestedList,
+          areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
+          onReorderFinished: (item, from, to, newList) {
+            setState(() {
+              nestedList
+                ..clear()
+                ..addAll(newList);
+            });
+          },
+          header: Container(
+            height: 120,
+            color: Colors.red,
+            child: Center(
+              child: Text(
+                'Header',
+                style: textTheme.headline6?.copyWith(color: Colors.white),
+              ),
             ),
           ),
-        ),
-        footer: Container(
-          height: 120,
-          color: Colors.red,
-          child: Center(
-            child: Text(
-              'Footer',
-              style: textTheme.headline6?.copyWith(color: Colors.white),
+          footer: Container(
+            height: 120,
+            color: Colors.red,
+            child: Center(
+              child: Text(
+                'Footer',
+                style: textTheme.headline6?.copyWith(color: Colors.white),
+              ),
             ),
           ),
-        ),
-        itemBuilder: (context, itemAnimation, item, index) {
-          return Reorderable(
-            key: ValueKey(item),
-            builder: (context, dragAnimation, inDrag) => AnimatedBuilder(
-              animation: dragAnimation,
-              builder: (context, child) => Card(
-                elevation: 4,
-                // SizeFadeTransition clips, so use the
-                // Card as a parent to avoid the box shadow
-                // to be clipped.
-                child: SizeFadeTransition(
-                  animation: itemAnimation,
-                  child: Handle(
-                    delay: const Duration(milliseconds: 600),
-                    child: Container(
-                      height: 120,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text('${item.key}'),
-                          const Handle(
-                            child: Icon(Icons.menu),
-                          ),
-                        ],
+          itemBuilder: (context, itemAnimation, item, index) {
+            return Reorderable(
+              key: ValueKey(item),
+              builder: (context, dragAnimation, inDrag) => AnimatedBuilder(
+                animation: dragAnimation,
+                builder: (context, child) => Card(
+                  elevation: 4,
+                  // SizeFadeTransition clips, so use the
+                  // Card as a parent to avoid the box shadow
+                  // to be clipped.
+                  child: SizeFadeTransition(
+                    animation: itemAnimation,
+                    child: Handle(
+                      delay: const Duration(milliseconds: 600),
+                      child: Container(
+                        height: 120,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text('${item.key}'),
+                            const Icon(Icons.menu),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

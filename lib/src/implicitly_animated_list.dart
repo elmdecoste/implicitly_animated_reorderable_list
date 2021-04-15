@@ -224,7 +224,8 @@ class SliverImplicitlyAnimatedList<E extends Object>
 }
 
 class _SliverImplicitlyAnimatedListState<E extends Object>
-    extends ImplicitlyAnimatedListBaseState<Widget, SliverImplicitlyAnimatedList<E>, E> {
+    extends ImplicitlyAnimatedListBaseState<Widget,
+        SliverImplicitlyAnimatedList<E>, E> {
   @override
   Widget build(BuildContext context) {
     return SliverAnimatedList(

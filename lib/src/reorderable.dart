@@ -53,7 +53,8 @@ class Reorderable extends StatefulWidget {
   }
 }
 
-class ReorderableState extends State<Reorderable> with SingleTickerProviderStateMixin {
+class ReorderableState extends State<Reorderable>
+    with SingleTickerProviderStateMixin {
   late Key key = widget.key ?? UniqueKey();
 
   late final _dragController = AnimationController(
