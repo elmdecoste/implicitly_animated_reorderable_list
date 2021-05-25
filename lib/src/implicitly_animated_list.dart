@@ -118,6 +118,9 @@ class ImplicitlyAnimatedList<E extends Object> extends StatelessWidget {
   /// The amount of space by which to inset the children.
   final EdgeInsetsGeometry? padding;
 
+  /// The scroll dismissal type of the list
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+
   /// Creates a Flutter ListView that implicitly animates between the changes
   /// of two lists.
   const ImplicitlyAnimatedList({
@@ -138,11 +141,13 @@ class ImplicitlyAnimatedList<E extends Object> extends StatelessWidget {
     this.physics,
     this.shrinkWrap = false,
     this.padding,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
+      keyboardDismissBehavior: keyboardDismissBehavior,
       scrollDirection: scrollDirection,
       reverse: reverse,
       controller: controller,
