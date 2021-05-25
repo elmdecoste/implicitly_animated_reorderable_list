@@ -126,6 +126,9 @@ class ImplicitlyAnimatedReorderableList<E extends Object>
   /// on performance and autoscrolling.
   final Widget? footer;
 
+  /// The scroll dismissal type of the list
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+
   /// Creates a Flutter ListView that implicitly animates between the changes of two lists with
   /// the support to reorder its items.
   ///
@@ -172,6 +175,7 @@ class ImplicitlyAnimatedReorderableList<E extends Object>
     required this.onReorderFinished,
     this.header,
     this.footer,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
   })  : liftDuration = liftDuration ?? reorderDuration,
         settleDuration = settleDuration ?? liftDuration ?? reorderDuration,
         assert(
@@ -657,6 +661,7 @@ class ImplicitlyAnimatedReorderableListState<E extends Object>
 
     final scrollView = CustomScrollView(
       key: _listKey,
+      keyboardDismissBehavior: widget.keyboardDismissBehavior,
       controller: _controller,
       scrollDirection: widget.scrollDirection,
       physics: inDrag ? const NeverScrollableScrollPhysics() : widget.physics,
